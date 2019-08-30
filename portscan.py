@@ -73,7 +73,4 @@ def port_scan(host):
         for port in range(PORT_SCAN_LOWER_RANGE, (PORT_SCAN_UPPER_RANGE + 1)):
             executor.submit(__scan, open_ports, host, port)
 
-    # Wait for executor to complete
-    executor.shutdown(wait=True)
-
     return open_ports
