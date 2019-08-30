@@ -26,10 +26,7 @@ from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 import socket
 
-
 PORT_SCAN_MAX_WORKERS = 1000    # How many workers can spawn for port scanning
-PORT_SCAN_LOWER_RANGE = 1       # Where to start port scanning
-PORT_SCAN_UPPER_RANGE = 1024    # Where to end port scanning
 ADDR_FAMILY = socket.AF_INET    # Addresses represented by tuple (host, port)
 SOCK_TYPE = socket.SOCK_STREAM  # 'TCP' sockets
 
@@ -47,15 +44,17 @@ def __scan(queue, host, port):
             pass
 
 
-def port_scan(host):
+def execute(host, lower_scan_range, upper_scan_range):
     '''
     Conducts a port scan of the provided host
 
     :param host: Host name or IP of host to conduct port scan.
                  IP shall be formatted 'xxx.xxx.xxx.xxx'.
-    :returns: list of open ports on provided host
+    :param lower_scan_range: Port to begin scan at
+    :param upper_scan_range: Port to end scan at
+    :returns: List of open ports on provided host
     '''
-    open_ports = deque()
+    open_ports = deque()  # Deque holding discovered open ports
 
     # Check whether hostname or IP and whether it exists
     try:
@@ -70,7 +69,7 @@ def port_scan(host):
 
     with ThreadPoolExecutor(max_workers=PORT_SCAN_MAX_WORKERS) as executor:
         # Schedule scans with thread pool
-        for port in range(PORT_SCAN_LOWER_RANGE, (PORT_SCAN_UPPER_RANGE + 1)):
+        for port in range(lower_scan_range, (upper_scan_range + 1)):
             executor.submit(__scan, open_ports, host, port)
 
-    return open_ports
+    return list(open_ports)

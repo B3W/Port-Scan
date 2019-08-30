@@ -35,8 +35,13 @@ if __name__ == '__main__':
     #     print(port)
 
     # Threaded Testing
+    start_port = 400
+    end_port = 1000
+
     start = timer()
-    portlist = portscan.port_scan('localhost')
+
+    portlist = portscan.execute('localhost', start_port, end_port)
+
     end = timer()
 
     print('Open Ports Discovered From Scan:')
